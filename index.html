@@ -17,15 +17,20 @@ body {
     overflow-x: hidden;
 }
 
-/* CONTAINER & TABLE */
+#title {
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+
+/* ------------------ CONTAINER & TABLE ------------------ */
 .container {
     width: 100%;
-    height: 100vh;
     padding: 20px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
+    /* remove height: 100vh; */
 }
 
 h1 {
@@ -33,24 +38,23 @@ h1 {
     text-align: center;
 }
 
-/* TABLE WRAPPER FOR HORIZONTAL SCROLL */
+/* Table wrapper allows horizontal scrolling */
 .table-wrapper {
     width: 100%;
     overflow-x: auto;
-    flex: 1; /* take most of the viewport height */
+    flex: 1; /* table takes most of the screen */
 }
 
 table {
     width: 100%;
-    min-width: 900px; /* ensures table is big enough */
+    min-width: 1200px; /* make table wider horizontally */
     border-collapse: collapse;
     background: white;
     border-radius: 10px;
-    overflow: hidden;
 }
 
 th, td {
-    padding: 16px;
+    padding: 30px;
     text-align: center;
     white-space: nowrap;
 }
@@ -65,6 +69,7 @@ tr:nth-child(even) {
     background: #f8fafc;
 }
 
+/* Club column */
 .club {
     text-align: left;
 }
@@ -75,6 +80,7 @@ tr:nth-child(even) {
     vertical-align: middle;
 }
 
+/* Team links */
 .club a {
     text-decoration: none;
     color: black;
@@ -85,18 +91,19 @@ tr:nth-child(even) {
     color: #2563eb;
 }
 
+/* Form colors */
 .form span {
     padding: 5px 8px;
     border-radius: 5px;
     font-size: 12px;
     margin: 2px;
 }
-
 .win { background: #22c55e; color: white; }
 .draw { background: #facc15; }
 .loss { background: #ef4444; color: white; }
+.tbd { background: gray; color: white; }
 
-/* MATCHUP MODAL */
+/* ------------------ MATCHUP MODAL ------------------ */
 #matchupModal {
     display: none;
     position: fixed;
@@ -180,7 +187,7 @@ tr:nth-child(even) {
     font-weight: bold;
 }
 
-/* CLOSE BUTTON */
+/* Close button */
 .close-btn {
     position: absolute;
     top: 20px;
@@ -190,12 +197,34 @@ tr:nth-child(even) {
     color: white;
     cursor: pointer;
 }
+
+/* Form legend under the table */
+.form-legend {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #475569;
+    text-align: center;
+    font-weight: bold;
+}
+.form-legend span {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
+    border-radius: 4px;
+    margin-right: 5px;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>JRFA League Table</h1>
+    <h1  id="title">JRFA League Table</h1>
+    <h2>MATCHWEEK 1/8</h2>
     <div class="table-wrapper">
         <table>
             <thead>
@@ -210,95 +239,163 @@ tr:nth-child(even) {
                     <th>Form</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td class="club"><a href="#" onclick="openMatchup('team1')"><img src="logotemplate.webp"> Team 1</a></td>
-                    <td>38</td><td>20</td><td>12</td><td>4</td><td>90</td>
-                    <td class="form"><span class="win">W</span><span class="win">W</span><span class="draw">D</span><span class="win">W</span><span class="loss">L</span></td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td class="club"><a href="#" onclick="openMatchup('team2')"><img src="logotemplate.webp"> Team 2</a></td>
-                    <td>38</td><td>20</td><td>12</td><td>4</td><td>85</td>
-                    <td class="form"><span class="draw">D</span><span class="win">W</span><span class="win">W</span><span class="loss">L</span><span class="win">W</span></td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td class="club"><a href="#" onclick="openMatchup('team3')"><img src="logotemplate.webp"> Team 3</a></td>
-                    <td>38</td><td>20</td><td>12</td><td>4</td><td>80</td>
-                    <td class="form"><span class="loss">L</span><span class="draw">D</span><span class="win">W</span><span class="win">W</span><span class="win">W</span></td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td class="club"><a href="#" onclick="openMatchup('team4')"><img src="logotemplate.webp"> Team 4</a></td>
-                    <td>38</td><td>18</td><td>10</td><td>10</td><td>75</td>
-                    <td class="form"><span class="win">W</span><span class="loss">L</span><span class="draw">D</span><span class="loss">L</span><span class="win">W</span></td>
-                </tr>
+            <tbody id="leagueTable">
+                <!-- Teams will be generated here from JS for easier editing -->
             </tbody>
         </table>
     </div>
 </div>
 
-<!-- MATCHUP MODAL -->
+<div class="form-legend">
+    <span class="win">W</span> = Win &nbsp;&nbsp;
+    <span class="draw">D</span> = Draw &nbsp;&nbsp;
+    <span class="loss">L</span> = Loss
+    <span class="tbd">?</span> = Match Unplayed
+</div>
+
+<!-- ------------------ MATCHUP MODAL ------------------ -->
 <div id="matchupModal">
     <div class="close-btn" onclick="closeMatchup()">&times;</div>
     <div class="modal-content" id="modalContent"></div>
 </div>
 
 <script>
-const matchups = {
-    team1: {
-        left: { name: 'TEAM 1', player1: 'PLAYER 1', player2: 'PLAYER 2', stat1: 10, stat2: 8, logo: 'logotemplate.webp' },
-        right: { name: 'TEAM 2', player1: 'PLAYER 1', player2: 'PLAYER 2', stat1: 12, stat2: 9, logo: 'logotemplate.webp' }
+// ------------------ TEAM DATA ------------------
+// Each team has: name, logo, points, W/D/L, form, matchup (next opponent)
+const teams = [
+    {
+        id: 'team1',
+        name: 'TEAM 1',
+        logo: 'logotemplate.webp',
+        played: 0,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        form: ['?','?','?','?','?'],
+        nextMatch: 'team2',  // next opponent
+        cardPlayers: { player1: "SEB", player2: "LUCAS"}
     },
-    team2: {
-        left: { name: 'TEAM 2', player1: 'PLAYER 1', player2: 'PLAYER 2', stat1: 11, stat2: 7, logo: 'logotemplate.webp' },
-        right: { name: 'TEAM 3', player1: 'PLAYER 1', player2: 'PLAYER 2', stat1: 14, stat2: 10, logo: 'logotemplate.webp' }
+    {
+        id: 'team2',
+        name: 'TEAM 2',
+        logo: 'logotemplate.webp',
+        played: 0,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        form: ['?','?','?','?','?'],
+        nextMatch: 'team1',
+        cardPlayers: { player1: "MAX", player2: "JACK" }
     },
-    team3: {
-        left: { name: 'TEAM 3', player1: 'PLAYER 1', player2: 'PLAYER 2', stat1: 13, stat2: 9, logo: 'logotemplate.webp' },
-        right: { name: 'TEAM 4', player1: 'PLAYER 1', player2: 'PLAYER 2', stat1: 15, stat2: 11, logo: 'logotemplate.webp' }
+    {
+        id: 'team3',
+        name: 'TEAM 3',
+        logo: 'logotemplate.webp',
+        played: 0,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        form: ['?','?','?','?','?'],
+        nextMatch: 'team4',
+        cardPlayers: { player1: "ELLIOT", player2: "KAITO" }
     },
-    team4: {
-        left: { name: 'TEAM 4', player1: 'PLAYER 1', player2: 'PLAYER 2', stat1: 9, stat2: 8, logo: 'logotemplate.webp' },
-        right: { name: 'TEAM 1', player1: 'PLAYER 1', player2: 'PLAYER 2', stat1: 10, stat2: 8, logo: 'logotemplate.webp' }
+    {
+        id: 'team4',
+        name: 'TEAM 4',
+        logo: 'logotemplate.webp',
+        played: 0,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        form: ['?','?','?','?','?'],
+        nextMatch: 'team3',
+        cardPlayers: { player1: "JAYDEN", player2: "RORY" }
     }
-};
 
+    
+];
+
+// ------------------ GENERATE TABLE ------------------
+const tableBody = document.getElementById('leagueTable');
+
+teams.forEach(team => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>${teams.indexOf(team)+1}</td>
+        <td class="club">
+            <a href="#" onclick="openMatchup('${team.id}')">
+                <img src="${team.logo}"> ${team.name}
+            </a>
+        </td>
+        <td>${team.played}</td>
+        <td>${team.wins}</td>
+        <td>${team.draws}</td>
+        <td>${team.losses}</td>
+        <td>${team.points}</td>
+        <td class="form">
+            ${team.form.map(f => {
+                if(f==='W') return `<span class="win">${f}</span>`;
+                if(f==='D') return `<span class="draw">${f}</span>`;
+                if(f==='?') return `<span class="tbd">${f}</span>`;
+                return `<span class="loss">${f}</span>`;
+            }).join('')}
+        </td>
+    `;
+    tableBody.appendChild(row);
+});
+
+// ------------------ MATCHUP MODAL ------------------
 function openMatchup(teamId){
     const modal = document.getElementById('matchupModal');
     const content = document.getElementById('modalContent');
     content.innerHTML = '';
 
-    const matchup = matchups[teamId];
+    // Get the clicked team
+    const team = teams.find(t => t.id === teamId);
+    // Get next opponent team
+    const opponent = teams.find(t => t.id === team.nextMatch);
 
-    function createCard(team){
-        return `
-            <div class="card">
-                <div class="team-name">${team.name}</div>
-                <div class="content">
-                    <div class="player">
-                        <div class="stat">${team.stat1}</div>
-                        <div class="player-name">${team.player1}</div>
-                    </div>
-                    <div class="team-logo"><img src="${team.logo}"></div>
-                    <div class="player">
-                        <div class="stat">${team.stat2}</div>
-                        <div class="player-name">${team.player2}</div>
-                    </div>
+function createCard(t){
+    return `
+        <div class="card">
+            <div class="team-name">${t.name}</div>
+            <div class="content">
+                <div class="player">
+                    <div class="player-name">${t.cardPlayers.player1}</div>
+                </div>
+                <div class="team-logo"><img src="${t.logo}"></div>
+                <div class="player">
+                    <div class="player-name">${t.cardPlayers.player2}</div>
                 </div>
             </div>
-        `;
-    }
+        </div>
+    `;
+}
 
-    content.innerHTML = createCard(matchup.left) + `<div class="vs">VS</div>` + createCard(matchup.right);
+    content.innerHTML = createCard(team) + `<div class="vs">VS</div>` + createCard(opponent);
     modal.style.display = 'flex';
 }
 
+// Close modal functions
 function closeMatchup(){
     document.getElementById('matchupModal').style.display = 'none';
 }
+
+document.getElementById('matchupModal').addEventListener('click', function(e){
+    if(e.target.id === 'matchupModal'){
+        closeMatchup();
+    }
+});
+
+document.addEventListener('keydown', function(e){
+    if(e.key === "Escape"){
+        closeMatchup();
+    }
+});
 </script>
 
 </body>
