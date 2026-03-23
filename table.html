@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JRFA League</title>
+<style>
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: #f1f5f9;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* CONTAINER & TABLE */
+.container {
+    width: 100%;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* TABLE WRAPPER FOR HORIZONTAL SCROLL */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    flex: 1; /* take most of the viewport height */
+}
+
+table {
+    width: 100%;
+    min-width: 900px; /* ensures table is big enough */
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 16px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+th {
+    background: #e2e8f0;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+.club {
+    text-align: left;
+}
+
+.club img {
+    width: 20px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.club a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+.club a:hover {
+    color: #2563eb;
+}
+
+.form span {
+    padding: 5px 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    margin: 2px;
+}
+
+.win { background: #22c55e; color: white; }
+.draw { background: #facc15; }
+.loss { background: #ef4444; color: white; }
+
+/* MATCHUP MODAL */
+#matchupModal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.modal-content {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 40px;
+    width: 900px;
+    max-width: 95%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+.card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 30px;
+    width: 300px;
+    text-align: center;
+}
+
+.team-name {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+.content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.player {
+    background: #f8fafc;
+    border-radius: 15px;
+    padding: 15px;
+    flex: 1;
+}
+
+.stat {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #2563eb;
+}
+
+.player-name {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.team-logo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.team-logo img {
+    width: 80px;
+}
+
+.vs {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* CLOSE BUTTON */
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>JRFA League Table</h1>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos.</th>
+                    <th class="club">Club</th>
+                    <th>P</th>
+                    <th>W</th>
+                    <th>D</th>
+                    <th>L</th>
+                    <th>Pts</th>
+                    <th>Form</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td class="club"><a href="#" onclick="openMatchup('team1')"><img src="logotemplate.webp"> Team 1</a></td>
+                    <td>38</td><td>20</td><td>12</td><td>4</td><td>90</td>
+                    <td class="form"><span class="win">W</span><span class="win">W</span><span class="draw">D</span><span class="win">W</span><span class="loss">L</span></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td class="club"><a href="#" onclick="openMatchup('team2')"><img src="logotemplate.webp"> Team 2</a></td>
+                    <td>38</td><td>20</td><td>12</td><td>4</td><td>85</td>
+                    <td class="form"><span class="draw">D</span><span class="win">W</span><span class="win">W</span><span class="loss">L</span><span class="win">W</span></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td class="club"><a href="#" onclick="openMatchup('team3')"><img src="logotemplate.webp"> Team 3</a></td>
+                    <td>38</td><td>20</td><td>12</td><td>4</td><td>80</td>
+                    <td class="form"><span class="loss">L</span><span class="draw">D</span><span class="win">W</span><span class="win">W</span><span class="win">W</span></td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td class="club"><a href="#" onclick="openMatchup('team4')"><img src="logotemplate.webp"> Team 4</a></td>
+                    <td>38</td><td>18</td><td>10</td><td>10</td><td>75</td>
+                    <td class="form"><span class="win">W</span><span class="loss">L</span><span class="draw">D</span><span class="loss">L</span><span class="win">W</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- MATCHUP MODAL -->
+<div id="matchupModal">
+    <div class="close-btn" onclick="closeMatchup()">&times;</div>
+    <div class="modal-content" id="modalContent"></div>
+</div>
+
+<script>
+const matchups = {
+    team1: {
+        left: { name: 'TEAM 1', player1: 'PLAYER 1', player2: 'PLAYER 2', stat1: 10, stat2: 8, logo: 'logotemplate.webp' },
+        right: { name: 'TEAM 2', player1: 'PLAYER 1', player2: 'PLAYER 2', stat1: 12, stat2: 9, logo: 'logotemplate.webp' }
+    },
+    team2: {
+        left: { name: 'TEAM 2', player1: 'PLAYER 1', player2: 'PLAYER 2', stat1: 11, stat2: 7, logo: 'logotemplate.webp' },
+        right: { name: 'TEAM 3', player1: 'PLAYER 1', player2: 'PLAYER 2', stat1: 14, stat2: 10, logo: 'logotemplate.webp' }
+    },
+    team3: {
+        left: { name: 'TEAM 3', player1: 'PLAYER 1', player2: 'PLAYER 2', stat1: 13, stat2: 9, logo: 'logotemplate.webp' },
+        right: { name: 'TEAM 4', player1: 'PLAYER 1', player2: 'PLAYER 2', stat1: 15, stat2: 11, logo: 'logotemplate.webp' }
+    },
+    team4: {
+        left: { name: 'TEAM 4', player1: 'PLAYER 1', player2: 'PLAYER 2', stat1: 9, stat2: 8, logo: 'logotemplate.webp' },
+        right: { name: 'TEAM 1', player1: 'PLAYER 1', player2: 'PLAYER 2', stat1: 10, stat2: 8, logo: 'logotemplate.webp' }
+    }
+};
+
+function openMatchup(teamId){
+    const modal = document.getElementById('matchupModal');
+    const content = document.getElementById('modalContent');
+    content.innerHTML = '';
+
+    const matchup = matchups[teamId];
+
+    function createCard(team){
+        return `
+            <div class="card">
+                <div class="team-name">${team.name}</div>
+                <div class="content">
+                    <div class="player">
+                        <div class="stat">${team.stat1}</div>
+                        <div class="player-name">${team.player1}</div>
+                    </div>
+                    <div class="team-logo"><img src="${team.logo}"></div>
+                    <div class="player">
+                        <div class="stat">${team.stat2}</div>
+                        <div class="player-name">${team.player2}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    content.innerHTML = createCard(matchup.left) + `<div class="vs">VS</div>` + createCard(matchup.right);
+    modal.style.display = 'flex';
+}
+
+function closeMatchup(){
+    document.getElementById('matchupModal').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
